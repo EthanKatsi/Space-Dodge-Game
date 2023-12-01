@@ -1,3 +1,4 @@
+# DEMO CODE. Not the fully completed code. You can find the fully completed one in the folder "RocketDodgeGame".
 import pygame
 import random
 
