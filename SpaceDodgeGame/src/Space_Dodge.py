@@ -1,4 +1,5 @@
 import pygame
+import os
 import random
 from random import choice
 from pygame import mixer  # Import the sound library
@@ -13,28 +14,30 @@ window = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Space Dodge")
 
 # Background images
-background_image = pygame.image.load("background.jpg")
+background_image = pygame.image.load("images/background.jpg")
 resized_background = pygame.transform.scale(background_image, (1063, 796))
 
-menu_start = pygame.image.load("menu_start.jpg")
+menu_start = pygame.image.load("images/menu_start.jpg")
 resized_start = pygame.transform.scale(menu_start, (1063, 796))
 
-menu_instructions = pygame.image.load("menu_instructions.jpg")
+menu_instructions = pygame.image.load("images/menu_instructions.jpg")
 resized_instructions = pygame.transform.scale(menu_instructions, (1063, 796))
 
-menu_exit = pygame.image.load("menu_exit.jpg")
+menu_exit = pygame.image.load("images/menu_exit.jpg")
 resized_exit = pygame.transform.scale(menu_exit, (1063, 796))
 
-how_to_play = pygame.image.load("how_to_play.jpg")
+how_to_play = pygame.image.load("images/how_to_play.jpg")
 resized_how_to_play = pygame.transform.scale(how_to_play, (1063, 796))
 
-game_over = pygame.image.load("game_over.jpg")
+game_over = pygame.image.load("images/game_over.jpg")
 resized_game_over = pygame.transform.scale(game_over, (1063, 796))
 
 resized_menu = resized_start
 
 # Background Music
-
+mixer.music.load(os.path.join(os.getcwd(), 'sounds', 'background_music.wav'))
+mixer.music.set_volume(0.6)
+mixer.music.play(loops = -1)  # Music loops forever
 
 # Set up the game variables (the characters)
 player_size = 50
@@ -61,7 +64,7 @@ clock = pygame.time.Clock()
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("ufo.png").convert_alpha(), (140, 100))
+        self.image = pygame.transform.scale(pygame.image.load("images/ufo.png").convert_alpha(), (140, 100))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -80,9 +83,7 @@ class Player(pygame.sprite.Sprite):
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("coin.png").convert_alpha(), (65, 65))
-        #self.image2 = pygame.transform.scale(pygame.image.load("coin.png").convert_alpha(), (75, 75))
-        #self.images = [self.image1, self.image2]
+        self.image = pygame.transform.scale(pygame.image.load("images/coin.png").convert_alpha(), (65, 65))
         
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -102,18 +103,15 @@ class Coin(pygame.sprite.Sprite):
             player_rect = player.rect
             if player_rect.colliderect(obstacle_rect):
                 obstacles.remove(obstacle)
-                mixer.music.load('coin_sound.wav')
-                mixer.music.play()  # Plays coin sound effect when coin is collected
+                mixer.Channel(0).play(mixer.Sound('sounds\coin_sound.wav'), maxtime=600)  # Plays coin sound effect when coin is collected
             
             window.blit(self.image, self.rect)
-            #for image in self.images:
-                #window.blit(self.image, self.rect)  # Draw the alien image onto the window
 
 # Set up alien sprite
 class Alien(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load("alien.png").convert_alpha(), (70, 70))
+        self.image = pygame.transform.scale(pygame.image.load("images/alien.png").convert_alpha(), (70, 70))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         
@@ -125,15 +123,17 @@ class Alien(pygame.sprite.Sprite):
             if enemy['x'] <= 0 or enemy['x'] >= window_width - enemy_size:
                 enemy['speed_x'] *= -1
             if enemy['y'] <= 0 or enemy['y'] >= window_height - enemy_size:
-                enemy['speed_y'] *=  -1
+                enemy['speed_y'] *= -1
 
             # Check for collision with player
             enemy_rect = pygame.Rect(enemy['x'], enemy['y'], enemy_size, enemy_size)
             player_rect = player.rect
             if player_rect.colliderect(enemy_rect):
                 game_over = True
+                mixer.Channel(1).play(mixer.Sound('sounds\game_over.wav'), maxtime=600)  # Plays game over sound effect when user touches an alien
+                    
             window.blit(self.image, self.rect)  # Draw the alien image onto the window
-                
+
 # Set up font
 font = pygame.font.Font(None, 36)
 
@@ -166,10 +166,14 @@ while running:
 
         if keys[pygame.K_RETURN]:
             if resized_menu == resized_start:
-                menu = False  # Start the game when RETURN is pressed
+                mixer.Channel(2).play(mixer.Sound('sounds\select.wav'), maxtime=600)  # Plays selection sound
+                menu = False  # Start the game when RETURN/ENTER is pressed
+                
             elif resized_menu == resized_instructions:
+                mixer.Channel(2).play(mixer.Sound('sounds\select.wav'), maxtime=600)  # Plays selection sound
                 resized_menu = resized_how_to_play
             elif resized_menu == resized_exit:
+                mixer.Channel(2).play(mixer.Sound('sounds\select.wav'), maxtime=600)  # Plays selection sound
                 running = False
                 
         if keys[pygame.K_ESCAPE]:
@@ -225,7 +229,8 @@ while running:
             player_rect = player.rect
             if player_rect.colliderect(enemy_rect):
                 game_over = True
-
+                mixer.Channel(1).play(mixer.Sound('sounds\game_over.wav'), maxtime=600)  # Plays game over sound effect when user touches an alien
+                
         # Update obstacles positions
         for obstacle in obstacles[:]:  # Iterate over a copy of the list
             obstacle['x'] += obstacle['speed_x']
@@ -240,8 +245,7 @@ while running:
             obstacle_rect = pygame.Rect(obstacle['x'], obstacle['y'], obstacle_size, obstacle_size)
             if player_rect.colliderect(obstacle_rect):
                 obstacles.remove(obstacle)
-                mixer.music.load('coin_sound.wav')
-                mixer.music.play()  # Plays coin sound effect when coin is collected
+                mixer.Channel(0).play(mixer.Sound('sounds\coin_sound.wav'), maxtime=600)  # Plays coin sound effect when coin is collected
 
         # Check if all obstacles are touched
         if len(obstacles) == 0:
@@ -293,6 +297,7 @@ while running:
         # Restart game after game over
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:  # If the space bar is pressed
+            mixer.Channel(2).play(mixer.Sound('sounds\select.wav'), maxtime=600)  # Plays selection sound
             game_over = False
             enemies = []
             num_enemies = 1
