@@ -35,9 +35,7 @@ resized_game_over = pygame.transform.scale(game_over, (1063, 796))
 resized_menu = resized_start
 
 # Background Music
-mixer.music.load(os.path.join(os.getcwd(), 'sounds', 'background_music.wav'))
-mixer.music.set_volume(0.6)
-mixer.music.play(loops = -1)  # Music loops forever
+# Can't add background music because the file size is too large to upload to github.
 
 # Set up the game variables (the characters)
 player_size = 50
