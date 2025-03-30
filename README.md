@@ -9,4 +9,4 @@ All backgrounds and designs are created using Adobe Photoshop by myself, besides
 
 You can find the code in the file "SpaceDodgeGame".
 
-Code created by Ethan Katsiroubas using Python.
+Code created by Ethan using Python.
