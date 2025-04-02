@@ -8,5 +8,3 @@ This project demonstrates my proficiency in game development, showcasing key ele
 All backgrounds and designs are created using Adobe Photoshop by myself, besides the UFO, alien, and coin sprite.
 
 You can find the code in the file "SpaceDodgeGame".
-
-Code created by Ethan using Python.
